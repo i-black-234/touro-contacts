@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+<!-- MUST wrap content of the cardview so that the height should only be as big as its content -->
+    <Button
+        android:id="@+id/contact_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Professor A"
+        android:onClick="handleButtonClick"
+        />
+
+</androidx.cardview.widget.CardView>
