@@ -1,7 +1,10 @@
-package com.example.tourodirectory;
+package com.example.tourodirectory.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 
+import com.example.tourodirectory.classes.ContactAdapter;
+import com.example.tourodirectory.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -18,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
 
     // Our Adapter
     private ContactAdapter mContactAdapter;
+    private View.OnClickListener mLaunchContactDetailClickListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,8 +69,11 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                // in order for the intent object to talk to the resultsactiviyu class we us the getApplicationContext() to be the bridge between the two
+                Intent intent = new Intent(getApplicationContext(), ContactDetailActivity.class);
+                startActivity(intent);
+/*                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();*/
             }
         });
     }

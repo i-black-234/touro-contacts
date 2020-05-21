@@ -17,6 +17,19 @@
         <item name="android:background">@drawable/splash_background</item>
     </style>
 
+    <!--    ADD this to enable dark theme and to make the results popup as a modal/dialog -->
+    <style name="AppThemeMinWdith" parent="Theme.AppCompat.DayNight.Dialog.MinWidth">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="AppThemeMinWdith.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 

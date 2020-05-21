@@ -1,4 +1,4 @@
-package com.example.tourodirectory;
+package com.example.tourodirectory.classes;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,6 +7,8 @@ import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.tourodirectory.R;
 
 public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHolder> {
 
