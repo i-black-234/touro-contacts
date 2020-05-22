@@ -25,7 +25,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity  {
 
     // Our Adapter
     private ContactAdapter mContactAdapter;
@@ -43,6 +43,9 @@ public class MainActivity extends AppCompatActivity {
         setupDirectory();
         
     }
+
+
+
 
     private void setupDirectory() {
 
@@ -136,4 +139,5 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
 }

@@ -1,18 +1,21 @@
 package com.example.tourodirectory.classes;
 
+import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tourodirectory.R;
+import com.example.tourodirectory.activities.ContactDetailActivity;
 
-import java.io.InputStream;
+import java.net.Inet4Address;
 import java.util.ArrayList;
-import java.util.List;
 
 public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHolder> {
 
@@ -21,6 +24,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
     // 3) Store it in an array
     // private String[] mContacts;
     private ArrayList<Contact> mContacts;
+
 
 
     // Constructor
@@ -44,11 +48,10 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
     // STEP 3
     // – this will also be called automatically after onCreateViewHolder() to bind this square to its data source
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
         //holder.mButton.setText(mContacts[position]);
         holder.mButton.setText(mContacts.get(position).getFullName());
     }
-
 
     // Our RecyclerView calls this getItemCount() to know how many items there are to inflate
     @Override
@@ -59,8 +62,9 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
     }
 
 
+
     // STEP 2
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         // Contact button
         private Button mButton;
@@ -70,6 +74,30 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
 
             // sets the button to be used in the onBindViewHolder()
             mButton = itemView.findViewById(R.id.contact_button);
+            mButton.setOnClickListener(this);
+
+        }
+
+
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(v.getContext(), ContactDetailActivity.class);
+            v.getContext().startActivity(intent);
+            Toast.makeText(v.getContext(), "CLICKED: " + getAbsoluteAdapterPosition(), Toast.LENGTH_SHORT).show();
+
         }
     }
+
 }
+
+/*
+*
+* STEP 1:
+* create an interface
+* 2:
+* implement the interface in main activytu
+* implement methods
+* mContacts.getPositon
+* Intent intent = new Intent(this, COntac6tdetail.class)
+* start();
+* */
