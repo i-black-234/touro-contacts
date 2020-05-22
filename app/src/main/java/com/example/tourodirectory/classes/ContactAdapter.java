@@ -10,17 +10,23 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tourodirectory.R;
 
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
 public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHolder> {
 
     // 1) Store it in a text file and pull it in
     // 2) from g sheet
     // 3) Store it in an array
-    private String[] mContacts;
+    // private String[] mContacts;
+    private ArrayList<Contact> mContacts;
 
 
     // Constructor
-    public ContactAdapter() {
-        mContacts = new String[]{"Professor A", "Professor B", "Professor C"};
+    public ContactAdapter(ArrayList<Contact> contacts) {
+        // mContacts = new String[]{"Professor A", "Professor B", "Professor C"};
+        mContacts = contacts;
     }
 
 
@@ -39,14 +45,17 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
     // – this will also be called automatically after onCreateViewHolder() to bind this square to its data source
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.mButton.setText(mContacts[position]);
+        //holder.mButton.setText(mContacts[position]);
+        holder.mButton.setText(mContacts.get(position).getFullName());
     }
 
 
     // Our RecyclerView calls this getItemCount() to know how many items there are to inflate
     @Override
     public int getItemCount() {
-        return mContacts.length;
+
+        // return mContacts.length;
+        return mContacts.size();
     }
 
 

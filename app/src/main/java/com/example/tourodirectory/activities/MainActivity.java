@@ -3,6 +3,8 @@ package com.example.tourodirectory.activities;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.example.tourodirectory.classes.CSVFile;
+import com.example.tourodirectory.classes.Contact;
 import com.example.tourodirectory.classes.ContactAdapter;
 import com.example.tourodirectory.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -13,15 +15,20 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListView;
+
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     // Our Adapter
     private ContactAdapter mContactAdapter;
-    private View.OnClickListener mLaunchContactDetailClickListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,20 +48,48 @@ public class MainActivity extends AppCompatActivity {
 
         // Get the recyclerview element from our content_main.xml file.
         RecyclerView objRecyclerView = findViewById(R.id.recycler_view);
+
         // Our contact list does not change once it is created in the adapter/backend
         objRecyclerView.setHasFixedSize(true);
 
         // This sets up our vertical directory
         RecyclerView.LayoutManager objLayoutManager = new LinearLayoutManager(this);
 
+
+        List<Contact> allContacts = getContacts();
+
         // Instantiate our ContactAdapter (and optionally pass in our size )
-        mContactAdapter = new ContactAdapter();
+        mContactAdapter = new ContactAdapter((ArrayList<Contact>) allContacts);
 
         // set the RecyclerView to use the layoutmanager
         objRecyclerView.setLayoutManager(objLayoutManager);
 
         // set the recyclerview to use the adapter
         objRecyclerView.setAdapter(mContactAdapter);
+    }
+
+
+    // This will generate ALL the Contact objects, from the CSV file, to be used in out adapter.
+    private List<Contact> getContacts() {
+        InputStream inputStream = getResources().openRawResource(R.raw.touro_contact_results);
+        CSVFile csvFile = new CSVFile(inputStream);
+        List<String[]> contacts = csvFile.read();
+        List<Contact> allContacts = new ArrayList<>();
+
+        // Skip first 'row' because that is the header
+        boolean firstRow = true;
+        for (String[] contact : contacts) {
+            if (firstRow) {
+                firstRow = false;
+                continue;
+            }
+            try {
+                allContacts.add( new Contact(contact[0], contact[1], contact[2], contact[3], contact[4]) );
+            }
+            catch (Exception e) {
+            }
+        }
+        return allContacts;
     }
 
 
