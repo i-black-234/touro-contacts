@@ -9,10 +9,12 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tourodirectory.R;
 import com.example.tourodirectory.activities.ContactDetailActivity;
+import com.google.gson.Gson;
 
 import java.net.Inet4Address;
 import java.util.ArrayList;
@@ -25,12 +27,12 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
     // private String[] mContacts;
     private ArrayList<Contact> mContacts;
 
-
-
+    private int mCounter;
     // Constructor
-    public ContactAdapter(ArrayList<Contact> contacts) {
-        // mContacts = new String[]{"Professor A", "Professor B", "Professor C"};
+
+    public ContactAdapter(ArrayList<Contact> contacts, int mCounter) {
         mContacts = contacts;
+        this.mCounter = mCounter;
     }
 
 
@@ -74,20 +76,38 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
 
             // sets the button to be used in the onBindViewHolder()
             mButton = itemView.findViewById(R.id.contact_button);
+
+            // Attached onclick to the button
             mButton.setOnClickListener(this);
 
         }
 
 
+
+        // When a user clicks on a contact.
         @Override
         public void onClick(View v) {
-            Intent intent = new Intent(v.getContext(), ContactDetailActivity.class);
-            v.getContext().startActivity(intent);
-            Toast.makeText(v.getContext(), "CLICKED: " + getAbsoluteAdapterPosition(), Toast.LENGTH_SHORT).show();
 
+            // This will update the  mCounter in the mainactivity when the user clicks on a contact. Uses Broadcasting
+            Intent intent = new Intent("update_counter");
+            intent.putExtra("COUNTER" , ++mCounter );
+            LocalBroadcastManager.getInstance(v.getContext()).sendBroadcast(intent);
+
+
+            // This will launch the contact detail popup.
+            Intent contactIntent = new Intent(v.getContext(), ContactDetailActivity.class);
+            contactIntent.putExtra("CONTACT", getJSONStringFromObject( mContacts.get(getAbsoluteAdapterPosition())) );
+            v.getContext().startActivity(contactIntent);
+        }
+
+
+        // Convert object tostring to be passed to ContactDetailActivity
+        public String getJSONStringFromObject (Contact obj)
+        {
+            Gson gson = new Gson ();
+            return gson.toJson (obj);
         }
     }
-
 }
 
 /*

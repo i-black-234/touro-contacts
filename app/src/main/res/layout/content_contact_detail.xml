@@ -46,6 +46,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="TextView"
+        android:autoLink="email"
         app:layout_constraintEnd_toEndOf="@+id/departments"
         app:layout_constraintStart_toStartOf="@+id/departments"
         app:layout_constraintTop_toBottomOf="@+id/departments" />
@@ -56,6 +57,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="TextView"
+        android:autoLink="phone"
         app:layout_constraintEnd_toEndOf="@+id/email"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/email"
