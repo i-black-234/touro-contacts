@@ -10,8 +10,10 @@ import com.example.tourodirectory.classes.CSVFile;
 import com.example.tourodirectory.classes.Contact;
 import com.example.tourodirectory.classes.ContactAdapter;
 import com.example.tourodirectory.R;
+import com.example.tourodirectory.classes.RecentContactAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.gson.Gson;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,6 +31,7 @@ import android.widget.Toast;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity  {
@@ -38,6 +41,7 @@ public class MainActivity extends AppCompatActivity  {
     // running total of contact clicks
     public int mCounter;
 
+    HashSet<Contact> mRecentContacts = new HashSet<>();
     // Keys
     private static final String COUNTER = "COUNTER";
 
@@ -66,6 +70,7 @@ public class MainActivity extends AppCompatActivity  {
 
     // Setup the directory
     private void setupDirectory() {
+
 
         // Get the recyclerview element from our content_main.xml file.
         RecyclerView objRecyclerView = findViewById(R.id.recycler_view);
@@ -127,12 +132,28 @@ public class MainActivity extends AppCompatActivity  {
             @Override
             public void onClick(View view) {
                 // in order for the intent object to talk to the resultsactiviyu class we us the getApplicationContext() to be the bridge between the two
-                Intent intent = new Intent(getApplicationContext(), ContactDetailActivity.class);
-                startActivity(intent);
-/*                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();*/
+/*                Intent intent = new Intent(getApplicationContext(), ContactDetailActivity.class);
+                startActivity(intent);*/
+                Snackbar.make(view, "Recent.", Snackbar.LENGTH_LONG)
+                        .setAction("Contacts", new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        showRecentContacts();
+                                    }
+                                }
+                        ).show();
             }
         });
+    }
+
+    private void showRecentContacts() {
+        Intent intent = new Intent(getApplicationContext(), RecentContactsActivity.class);
+        // loop through hashset, create a string of each Contact and add it to a string array
+        ArrayList<String> recentContactsStringArray = new ArrayList<>();
+        for (Contact contact : mRecentContacts)
+            recentContactsStringArray.add( getJSONStringFromObject(contact) );
+        intent.putStringArrayListExtra("RECENT_CONTACTS",recentContactsStringArray);
+        startActivity(intent);
     }
 
     // When the contact is clicked then we increment the amount of clicks the  user clicked.
@@ -146,6 +167,12 @@ public class MainActivity extends AppCompatActivity  {
     public BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            // Add the contact to the recently clicked contact hashset.
+            // I had to override the hashcode so that it does not duplicate the objects.
+            String contactString = intent.getStringExtra("CLICKED_CONTACT");
+            Contact contact = getObjectFromJSONString(contactString);
+            mRecentContacts.add(contact);
+
              mCounter = intent.getIntExtra(COUNTER, mCounter);
             // Toast.makeText(MainActivity.this, mCounter + "", Toast.LENGTH_SHORT).show();
             Snackbar.make(findViewById(android.R.id.content).getRootView(),  "You clicked on " + mCounter + " contacts.", Snackbar.LENGTH_LONG).show(); //.setAction("Action", recentContacts()).show();
@@ -174,6 +201,19 @@ public class MainActivity extends AppCompatActivity  {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public static Contact getObjectFromJSONString (String json)
+    {
+        Gson gson = new Gson ();
+        return gson.fromJson (json, Contact.class);
+    }
+
+    // Convert object tostring to be passed to ContactDetailActivity
+    public String getJSONStringFromObject (Contact obj)
+    {
+        Gson gson = new Gson ();
+        return gson.toJson (obj);
     }
 
 }
