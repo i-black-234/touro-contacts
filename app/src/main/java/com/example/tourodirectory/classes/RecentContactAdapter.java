@@ -1,6 +1,22 @@
 package com.example.tourodirectory.classes;
 
 import android.content.Intent;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+
+import androidx.annotation.NonNull;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.tourodirectory.R;
+import com.example.tourodirectory.activities.ContactDetailActivity;
+import com.google.gson.Gson;
+
+import java.util.ArrayList;
+
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,8 +34,7 @@ import com.google.gson.Gson;
 
 import java.net.Inet4Address;
 import java.util.ArrayList;
-
-public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHolder> {
+public class RecentContactAdapter extends RecyclerView.Adapter<RecentContactAdapter.ViewHolder> {
 
     // 1) Store it in a text file and pull it in
     // 2) from g sheet
@@ -27,12 +42,10 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
     // private String[] mContacts;
     private ArrayList<Contact> mContacts;
 
-    private int mCounter;
     // Constructor
 
-    public ContactAdapter(ArrayList<Contact> contacts, int mCounter) {
+    public RecentContactAdapter(ArrayList<Contact> contacts) {
         mContacts = contacts;
-        this.mCounter = mCounter;
     }
 
 
@@ -64,7 +77,6 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
     }
 
 
-
     // STEP 2
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
@@ -83,42 +95,32 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
         }
 
 
-
         // When a user clicks on a contact.
         @Override
         public void onClick(View v) {
-
-            // This will update the  mCounter in the mainactivity when the user clicks on a contact. Uses Broadcasting
-            Intent intent = new Intent("update_counter");
-            intent.putExtra("COUNTER" , ++mCounter );
-            intent.putExtra("CLICKED_CONTACT" , getJSONStringFromObject( mContacts.get(getAbsoluteAdapterPosition())) );
-            LocalBroadcastManager.getInstance(v.getContext()).sendBroadcast(intent);
-
-
             // This will launch the contact detail popup.
             Intent contactIntent = new Intent(v.getContext(), ContactDetailActivity.class);
-            contactIntent.putExtra("CONTACT", getJSONStringFromObject( mContacts.get(getAbsoluteAdapterPosition())) );
+            contactIntent.putExtra("CONTACT", getJSONStringFromObject(mContacts.get(getAbsoluteAdapterPosition())));
             v.getContext().startActivity(contactIntent);
         }
 
 
         // Convert object tostring to be passed to ContactDetailActivity
-        public String getJSONStringFromObject (Contact obj)
-        {
-            Gson gson = new Gson ();
-            return gson.toJson (obj);
+        public String getJSONStringFromObject(Contact obj) {
+            Gson gson = new Gson();
+            return gson.toJson(obj);
         }
     }
 }
 
 /*
-*
-* STEP 1:
-* create an interface
-* 2:
-* implement the interface in main activytu
-* implement methods
-* mContacts.getPositon
-* Intent intent = new Intent(this, COntac6tdetail.class)
-* start();
-* */
+ *
+ * STEP 1:
+ * create an interface
+ * 2:
+ * implement the interface in main activytu
+ * implement methods
+ * mContacts.getPositon
+ * Intent intent = new Intent(this, COntac6tdetail.class)
+ * start();
+ * */
