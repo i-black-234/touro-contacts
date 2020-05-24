@@ -1,3 +1,11 @@
 <resources>
+    // margins
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="double_margin">32dp</dimen>
+    <dimen name="standard_margin">16dp</dimen>
+
+    // text sizes
+    <dimen name="contact_name_text_size">18sp</dimen>
+    <dimen name="contact_detail_padding">48dp</dimen>
+
 </resources>
