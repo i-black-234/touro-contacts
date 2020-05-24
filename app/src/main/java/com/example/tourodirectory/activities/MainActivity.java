@@ -134,8 +134,8 @@ public class MainActivity extends AppCompatActivity  {
                 // in order for the intent object to talk to the resultsactiviyu class we us the getApplicationContext() to be the bridge between the two
 /*                Intent intent = new Intent(getApplicationContext(), ContactDetailActivity.class);
                 startActivity(intent);*/
-                Snackbar.make(view, "Recent.", Snackbar.LENGTH_LONG)
-                        .setAction("Contacts", new View.OnClickListener() {
+                Snackbar.make(view, "" + mCounter, Snackbar.LENGTH_LONG)
+                        .setAction("Recent Contacts", new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
                                         showRecentContacts();
@@ -175,7 +175,7 @@ public class MainActivity extends AppCompatActivity  {
 
              mCounter = intent.getIntExtra(COUNTER, mCounter);
             // Toast.makeText(MainActivity.this, mCounter + "", Toast.LENGTH_SHORT).show();
-            Snackbar.make(findViewById(android.R.id.content).getRootView(),  "You clicked on " + mCounter + " contacts.", Snackbar.LENGTH_LONG).show(); //.setAction("Action", recentContacts()).show();
+            //Snackbar.make(findViewById(android.R.id.content).getRootView(),  "You clicked on " + mCounter + " contacts.", Snackbar.LENGTH_LONG).show(); //.setAction("Action", recentContacts()).show();
         }
     };
 
