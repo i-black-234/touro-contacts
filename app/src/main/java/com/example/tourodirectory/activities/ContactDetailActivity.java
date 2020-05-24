@@ -78,9 +78,18 @@ public class ContactDetailActivity extends AppCompatActivity {
     private void populateTextViews() {
         full_name_tv.setText(contact.getFullName());
         school_tv.setText(contact.getSchool());
-        department_tv.setText(contact.getDepartment());
+        department_tv.setText(getDepartmentString());
         email.setText(contact.getEmail());
         number_tv.setText(contact.getNumber());
+    }
+
+    // This will split the department string and make it nice, new line etc.
+    private String getDepartmentString() {
+        String[] departments = contact.getDepartment().split("\\$");
+        String result = "";
+        for (String  dept : departments)
+            result += dept.replace('~', ',') + "\n";
+        return result;
     }
 
     public static Contact getObjectFromJSONString (String json)
