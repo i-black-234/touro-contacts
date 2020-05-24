@@ -1,5 +1,8 @@
 package com.example.tourodirectory.classes;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 public class Contact {
 
     private String fullName;
@@ -54,5 +57,28 @@ public class Contact {
 
     public void setNumber(String number) {
         this.number = number;
+    }
+
+
+
+    @Override
+    public  boolean equals(Object obj) {
+        if (obj == this)
+            return true;
+        if (obj == null)
+            return false;
+        if (obj instanceof  Contact) {
+            return ((Contact) obj).department.equals( department) &&
+                    ((Contact) obj).email.equals(email) &&
+                    ((Contact) obj).fullName.equals(fullName) &&
+                    ((Contact) obj).number.equals(number) &&
+                    ((Contact) obj).school.equals(school);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(new Object[] {fullName, school, department, email, number});
     }
 }
