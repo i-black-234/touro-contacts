@@ -5,9 +5,10 @@
     <string name="title_activity_settings">Settings</string>
 
     <!-- Preference Titles -->
-    <string name="pref_header_general">General</string>
-    <string name="key_use_auto_save">AUTOSAVE</string>
-    <string name="title_use_auto_save">Auto-Save</string>
+<!--    <string name="pref_header_general">General</string>-->
+    <string name="title_use_save_rc">Save Recent Contacts</string>
+    <string name="about_message">This is a Touro contacts directory. We created this app with the goal of making it easier for fellow Touro students to access important contacts.
+        This app was created by Isaac Black and Aaron Farntrog.</string>
 
 
 </resources>
