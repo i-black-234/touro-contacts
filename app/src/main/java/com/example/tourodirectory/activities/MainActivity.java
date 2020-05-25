@@ -222,6 +222,7 @@ public class MainActivity extends AppCompatActivity  {
             return true;
         }
         return super.onOptionsItemSelected(item);
+
     }
 
     public static Contact getObjectFromJSONString (String json)
