@@ -58,9 +58,6 @@ public class RecentContactsActivity extends AppCompatActivity {
     }
 
 
-
-
-
     // Convert object tostring to be passed to ContactDetailActivity
     public static Contact getObjectFromJSONString (String json)
     {
