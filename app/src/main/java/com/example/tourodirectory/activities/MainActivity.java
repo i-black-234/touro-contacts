@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity  {
     // running total of contact clicks
     public int mCounter;
 
-    HashSet<Contact> mRecentContacts = new HashSet<>();
+    HashSet<Contact> mRecentContacts;
     // Keys
     private static final String COUNTER = "COUNTER";
 
@@ -54,18 +54,33 @@ public class MainActivity extends AppCompatActivity  {
         setupToolbar();
         setupFAB();
 
-        // This will update the counter in the case where the screen was rotated.
-        mCounter = savedInstanceState == null ? 0 : savedInstanceState.getInt( COUNTER);
-
         // When the user clicks on a contact that is part of the RV, then the OnClick() from the RV will "broadcast" to us to update the counter
         // We can then get that value and update our counter.
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("update_counter"));
 
         // create/setup RecyclerView
         setupDirectory();
-        
+
+        // Initialize fields then reset them if there is a savedIntanceState
+        mCounter = 0;
+        mRecentContacts = new HashSet<>();
+
+        if (!(savedInstanceState == null))
+            getDataFromSavedInstanceState(savedInstanceState); // Retrieve the data stored in the savedIntanceState bundle
+
     }
 
+    private void getDataFromSavedInstanceState(Bundle savedInstanceState) {
+
+        // Update the counter to the counter stored in the savedInstanceState
+        mCounter =  savedInstanceState.getInt( COUNTER);
+
+        // Fill the mRecentContacts HashSet with the recent contacts stored in the savedInstanceState
+        for (String contact : savedInstanceState.getStringArrayList("RECENT_CONTACTS")) {
+            mRecentContacts.add(getObjectFromJSONString(contact));
+        }
+
+    }
 
 
     // Setup the directory
@@ -161,6 +176,12 @@ public class MainActivity extends AppCompatActivity  {
     {
         super.onSaveInstanceState (outState);
         outState.putInt(COUNTER, mCounter);
+
+        // Send the mRecentContacts HashSet to the saved InstanceState bundle
+        ArrayList<String> recentContactsStringArray = new ArrayList<>();
+        for (Contact contact : mRecentContacts)
+            recentContactsStringArray.add( getJSONStringFromObject(contact) );
+        outState.putStringArrayList("RECENT_CONTACTS",recentContactsStringArray);
     }
 
 
