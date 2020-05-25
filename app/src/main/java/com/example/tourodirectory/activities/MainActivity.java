@@ -58,15 +58,15 @@ public class MainActivity extends AppCompatActivity  {
         // We can then get that value and update our counter.
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("update_counter"));
 
-        // create/setup RecyclerView
-        setupDirectory();
-
         // Initialize fields then reset them if there is a savedIntanceState
         mCounter = 0;
         mRecentContacts = new HashSet<>();
 
         if (!(savedInstanceState == null))
             getDataFromSavedInstanceState(savedInstanceState); // Retrieve the data stored in the savedIntanceState bundle
+
+        // create/setup RecyclerView
+        setupDirectory();
 
     }
 
