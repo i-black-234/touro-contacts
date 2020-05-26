@@ -2,9 +2,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.example.tourodirectory.activities.MainActivity">
+<!--    <item-->
+<!--        android:id="@+id/action_settings"-->
+<!--        android:orderInCategory="100"-->
+<!--        android:title="@string/action_settings"-->
+<!--        app:showAsAction="never" />-->
+
     <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />
+        android:id="@+id/action_toggle_save_rc"
+        android:title="Save recent contacts"
+        android:checkable="true"
+        app:showAsAction="never"
+        />
+    <item
+        android:id="@+id/action_about"
+        android:title="About"
+        android:icon="@android:drawable/ic_dialog_info"
+        app:showAsAction="never"
+        />
 </menu>

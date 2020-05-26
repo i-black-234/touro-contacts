@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import com.example.tourodirectory.classes.CSVFile;
@@ -11,6 +12,7 @@ import com.example.tourodirectory.classes.Contact;
 import com.example.tourodirectory.classes.ContactAdapter;
 import com.example.tourodirectory.R;
 import com.example.tourodirectory.classes.RecentContactAdapter;
+import com.example.tourodirectory.classes.Utils;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
@@ -19,6 +21,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -33,17 +36,31 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity  {
 
+    // settings preferences
+    private boolean mPrefSaveRecentContacts;
+
+    // prefs key for SP file
+    private final String mPrefKey = "PREFS";
+    // Name of key for setting that saves contacts
+    private String mKeyPrefSaveRecentContacts = "SAVE_RECENT_CONTACTS";
+    // name of key that is used to input data to  SP
+    private String mKeyRecentContacts = "RECENT_CONTACTS";
+
+
     // Our Adapter
     private ContactAdapter mContactAdapter;
-    // running total of contact clicks
-    public int mCounter;
 
-    HashSet<Contact> mRecentContacts;
+    // running total of contact clicks
+    public int mCounter = 0;
+
+    HashSet<Contact> mRecentContacts = new HashSet<>();
     // Keys
     private static final String COUNTER = "COUNTER";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,24 +71,31 @@ public class MainActivity extends AppCompatActivity  {
         setupToolbar();
         setupFAB();
 
+        // Settings the defaults SP values
+        PreferenceManager.setDefaultValues (getApplicationContext (), R.xml.root_preferences, true);
+
+
         // When the user clicks on a contact that is part of the RV, then the OnClick() from the RV will "broadcast" to us to update the counter
         // We can then get that value and update our counter.
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("update_counter"));
 
-        // Initialize fields then reset them if there is a savedIntanceState
-        mCounter = 0;
-        mRecentContacts = new HashSet<>();
-
+        // reset fields if savedIntanceState
         if (!(savedInstanceState == null))
-            getDataFromSavedInstanceState(savedInstanceState); // Retrieve the data stored in the savedIntanceState bundle
+            getDataFromSavedInstanceState(savedInstanceState);
 
         // create/setup RecyclerView
         setupDirectory();
+        restoreAppSettingsFromPrefs();
+        getRecentContactsFromPrefs();
+
 
     }
 
+
+
     private void getDataFromSavedInstanceState(Bundle savedInstanceState) {
 
+        // Update the counter to the counter stored in the savedInstanceState
         // Update the counter to the counter stored in the savedInstanceState
         mCounter =  savedInstanceState.getInt( COUNTER);
 
@@ -149,7 +173,7 @@ public class MainActivity extends AppCompatActivity  {
                 // in order for the intent object to talk to the resultsactiviyu class we us the getApplicationContext() to be the bridge between the two
 /*                Intent intent = new Intent(getApplicationContext(), ContactDetailActivity.class);
                 startActivity(intent);*/
-                Snackbar.make(view, "" + mCounter, Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "" + mRecentContacts.size(), Snackbar.LENGTH_LONG)
                         .setAction("Recent Contacts", new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
@@ -181,7 +205,7 @@ public class MainActivity extends AppCompatActivity  {
         ArrayList<String> recentContactsStringArray = new ArrayList<>();
         for (Contact contact : mRecentContacts)
             recentContactsStringArray.add( getJSONStringFromObject(contact) );
-        outState.putStringArrayList("RECENT_CONTACTS",recentContactsStringArray);
+        outState.putStringArrayList("RECENT_CONTACTS", recentContactsStringArray);
     }
 
 
@@ -201,6 +225,84 @@ public class MainActivity extends AppCompatActivity  {
     };
 
 
+    // PREFS
+
+    // when the apps stops then we'll call saveToSharedPref() to save the info
+    @Override
+    protected void onStop() {
+        saveToSharedPref();
+        super.onStop();
+    }
+
+    private void saveToSharedPref ()
+    {
+        // create file or read from already created file. name of file should match  key.
+        SharedPreferences preferences = getSharedPreferences (mPrefKey, MODE_PRIVATE);
+
+        // Editor object
+        SharedPreferences.Editor editor = preferences.edit ();
+
+        // clear current file from last save
+        editor.clear ();
+
+        // save the settings (keep recent contacts)
+        saveSettingsToSharedPrefs (editor);
+
+        // if autoSave is on then save the actual data/recentcontacts
+        saveRecentContactsToSharedPrefsIfAutoSaveIsOn (editor);
+
+        // apply the changes to the XML file in the device's storage
+        editor.apply ();
+    }
+
+    private void saveRecentContactsToSharedPrefsIfAutoSaveIsOn(SharedPreferences.Editor editor) {
+        if (mPrefSaveRecentContacts){
+            HashSet<String> recentContactsStringArray = new HashSet<>();
+            for (Contact contact : mRecentContacts)
+                recentContactsStringArray.add( getJSONStringFromObject(contact) );
+            editor.putStringSet(mKeyRecentContacts ,recentContactsStringArray);
+
+        }
+    }
+
+    private void saveSettingsToSharedPrefs(SharedPreferences.Editor editor) {
+        // save/nosave users recent contacts
+        editor.putBoolean(mKeyPrefSaveRecentContacts, mPrefSaveRecentContacts);
+    }
+
+    // Courtesy feature to keep the same setting checked from last session.
+    private void restoreAppSettingsFromPrefs ()
+    {
+        // Since this is for reading only, no editor is needed unlike in saveRestoreState
+        SharedPreferences preferences = getSharedPreferences (mPrefKey, MODE_PRIVATE);
+
+        // restore AutoSave preference value
+        mPrefSaveRecentContacts = preferences.getBoolean (mKeyPrefSaveRecentContacts, true);
+    }
+
+    private void getRecentContactsFromPrefs() {
+        // Restore if user wants us to.
+        if (mPrefSaveRecentContacts && isExistingContactsInPrefs())
+            restoreRecentContacts();
+    }
+
+    // Gets the contacts from prefs and stores it in our Recentcontact hashset
+    private void restoreRecentContacts() {
+        SharedPreferences preferences = getSharedPreferences(mPrefKey, MODE_PRIVATE);
+        Set<String> recentContactStrings = preferences.getStringSet(mKeyRecentContacts, new HashSet<String>());
+        for (String contact : recentContactStrings)
+            mRecentContacts.add( getObjectFromJSONString(contact) );
+    }
+
+    // Make sure there is at least one contact stored in  prefs
+    private boolean isExistingContactsInPrefs() {
+        SharedPreferences preferences = getSharedPreferences(mPrefKey, MODE_PRIVATE);
+        Set<String> contactsExist = preferences.getStringSet(mKeyRecentContacts, new HashSet<String>());
+        return (contactsExist.size() > 0);
+    }
+    // END - PREFS
+
+
     // Settings page stuff
 
     @Override
@@ -208,6 +310,13 @@ public class MainActivity extends AppCompatActivity  {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
+    }
+
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.action_toggle_save_rc).setChecked(mPrefSaveRecentContacts);
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -218,13 +327,24 @@ public class MainActivity extends AppCompatActivity  {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_toggle_save_rc) {
+            toggleContactMenuItem(item);
             return true;
         }
+        if (id == R.id.action_about)
+            Utils.showInfoDialog (this, R.string.app_name, R.string.about_message);
         return super.onOptionsItemSelected(item);
 
     }
 
+    // Toggle the menu button
+    private void toggleContactMenuItem(MenuItem item) {
+        item.setChecked(!item.isChecked());
+        mPrefSaveRecentContacts = item.isChecked();
+    }
+
+
+    // GSON helpers
     public static Contact getObjectFromJSONString (String json)
     {
         Gson gson = new Gson ();

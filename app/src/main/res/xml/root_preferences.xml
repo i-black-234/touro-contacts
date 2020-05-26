@@ -4,7 +4,6 @@
 
     <CheckBoxPreference
         android:defaultValue="true"
-        android:key="@string/key_use_auto_save"
-        android:title="@string/title_use_auto_save"
+        android:title="@string/title_use_save_rc"
         />
 </androidx.preference.PreferenceScreen>
